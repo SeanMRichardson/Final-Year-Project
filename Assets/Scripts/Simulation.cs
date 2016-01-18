@@ -4,6 +4,8 @@ using System.Collections;
 public class Simulation : MonoBehaviour
 {
     public float densityOfAir = 1.2922f;
+
+    [Range (1, 1000000)]
     public int runSpeed;
 
     public Vector2 projectileVelocity;
@@ -22,6 +24,8 @@ public class Simulation : MonoBehaviour
     Rigidbody rb;
     float mass;
     PhysicsObject po;
+
+    Vector3 gravity;
     // simulation needs
     // fire a projectile
     // instantiate the projectile and the target at a given distance to each other
@@ -36,11 +40,13 @@ public class Simulation : MonoBehaviour
         po = projectile.GetComponent<PhysicsObject>();
         projectileStartPosition = projectile.transform.position;
         targetPosition = target.transform.position;
+        gravity = new Vector3(0f, -9.81f, 0f);
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        Physics.gravity = gravity;
         Physics.gravity = Physics.gravity / runSpeed;
         projectilePosition = projectile.transform.position;
         projectileVelocity = po.velocity;
@@ -50,6 +56,7 @@ public class Simulation : MonoBehaviour
         }
         if(simulationRunning)
         {
+            rb.useGravity = true;
             rb.AddForce(Vector3.right * force * (Time.fixedDeltaTime / runSpeed), ForceMode.Impulse);
             //projectilePosition.x += projectileVelocity * (Time.deltaTime/100);
             //projectile.transform.position = projectilePosition;
