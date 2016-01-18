@@ -4,12 +4,13 @@ using System.Collections;
 public class Simulation : MonoBehaviour
 {
     public float densityOfAir = 1.2922f;
+    public int runSpeed;
 
     public Vector2 projectileVelocity;
     public float projectileAcceleration;
     public float force;
 
-    public bool runSimulation;
+    public bool simulationRunning;
 
     public Collider projectile;
     public Collider target;
@@ -34,23 +35,24 @@ public class Simulation : MonoBehaviour
         rb = projectile.GetComponent<Rigidbody>();
         po = projectile.GetComponent<PhysicsObject>();
         projectileStartPosition = projectile.transform.position;
-        projectilePosition = projectileStartPosition;
-        projectileVelocity = po.velocity;
+        targetPosition = target.transform.position;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        Physics.gravity = Physics.gravity / runSpeed;
+        projectilePosition = projectile.transform.position;
+        projectileVelocity = po.velocity;
         if (Input.GetKey("space"))
         {
-            runSimulation = true;
+            simulationRunning = true;
         }
-        if(runSimulation)
+        if(simulationRunning)
         {
-            rb.AddForce(Vector3.right * force * (Time.deltaTime / 1000), ForceMode.Impulse);
+            rb.AddForce(Vector3.right * force * (Time.fixedDeltaTime / runSpeed), ForceMode.Impulse);
             //projectilePosition.x += projectileVelocity * (Time.deltaTime/100);
             //projectile.transform.position = projectilePosition;
-            runSimulation = false;
         } 
     }
 
