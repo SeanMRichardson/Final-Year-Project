@@ -13,6 +13,8 @@ public class PhysicsObject : MonoBehaviour
 	public float initialKineticEnergy;
 	public float kineticEnergy;
 
+	public float coefficientOfRestitution;
+
 	public float drag;
 
 	Rigidbody rb;
@@ -26,6 +28,8 @@ public class PhysicsObject : MonoBehaviour
 
 	public Vector2 force;
 	public Vector2 acceleration;
+
+	public bool collided;
 
 	// Use this for initialization
 	void Start ()
@@ -64,7 +68,7 @@ public class PhysicsObject : MonoBehaviour
 			varyingBallisticDragCoefficient = 0.120f;
 		}
 
-		if (s.simulationRunning)
+		if (s.simulationRunning && !collided)
 		{
 			velocity += acceleration * Time.fixedDeltaTime / s.runSpeed;
 			velocityFtPerSecond = velocity / 0.3048f;
@@ -87,5 +91,16 @@ public class PhysicsObject : MonoBehaviour
 
 			rb.AddForce(force * (Time.fixedDeltaTime / s.runSpeed));
 		}
+
+		if(collided)
+		{
+			velocity.x = (((coefficientOfRestitution * s.target.GetComponent<PhysicsObject>().massInKg) - velocity.x) + (massInKg * velocity.x)) / massInKg + s.target.GetComponent<PhysicsObject>().massInKg;
+		}
+	}
+
+	void OnCollisionEnter(Collision other)
+	{
+		if (other.gameObject.tag == "Target")
+			collided = true;
 	}
 }
